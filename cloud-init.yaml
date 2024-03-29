@@ -1,0 +1,6 @@
+#cloud-config
+runcmd:
+- sudo hostnamectl set-hostname ${hostname}
+- sudo apt update -y
+- sudo apt upgrade -y
+
