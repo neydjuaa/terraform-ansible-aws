@@ -18,14 +18,33 @@ terraform apply -auto-approve
 
 
 
-touch ansible/ansible.cfg
-touch ansible/inventory
+#!/bin/bash
 
-echo "[defaults]" >> ansible/ansible.cfg
-echo "inventory = inventory" >> ansible/ansible.cfg
-echo "host_key_checking = false" >> ansible/ansible.cfg
+# Chemin complet du fichier de configuration
+fichier="/home/muharrem/projetbt/ansible/ansible.cfg"
 
-#ajout adresse ip à l'inventory
+# Vérifie si le fichier existe
+if ! test  -f "$fichier"; then
+    # Si le fichier existe, ajoute ou écrase son contenu avec les configurations souhaitées
+    echo "[defaults]" > "$fichier"
+    echo "inventory = inventory" >> "$fichier"
+    echo "host_key_checking = false" >> "$fichier"
+else
+    # Si le fichier n'existe pas, affiche un message
+    echo "Le fichier $fichier n'existe pas."
+fi
 
-haha=$(terraform output -json public_ip)
-echo "$haha" | jq -r 'to_entries[] | "echo \(.key) ansible_host=\(.value) >> ansible/inventory"' | bash
+
+#ajout adresses ip à l'inventory
+
+if ! test -f /home/muharrem/projetbt/ansible/inventory; then
+  touch ansible/inventory
+  haha=$(terraform output -json public_ip)
+  echo "$haha" | jq -r 'to_entries[] | "echo \(.key) ansible_host=\(.value) >> ansible/inventory"' | bash
+  echo "[all:vars]" >> ansible/inventory
+  echo "ansible_ssh_private_key_file = ../keys/private_key.pem" >> ansible/inventory
+  echo "ansible_user = ubuntu"  >> ansible/inventory
+else
+  echo "It's ok"
+fi
+
