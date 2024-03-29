@@ -34,5 +34,5 @@ override.tf.json
 terraform.rc
 **/keys
 **/keys/*
-**/ansible
-**/ansible/*
+ansible/inventory
+ansible/ansible.cfg
